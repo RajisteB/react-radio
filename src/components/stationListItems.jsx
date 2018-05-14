@@ -8,8 +8,9 @@ class StationListItems extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      streaming: false,
       audio: '',
+      error: false,
+      streaming: false,
     }
   }
 
@@ -21,15 +22,19 @@ class StationListItems extends Component {
 
   playStream = (id) => {
     axios.get(`http://yp.shoutcast.com/sbin/tunein-station.pls?id=${id}`)
-      .then(res => {
+      .catch(error => {
+        return Promise.reject(error.response);
+        console.log('Error:' + error.message);
+        this.setState({
+          error: true
+        })
+      }).then(res => {
         let stream = res.data.split("\n")[2].split('=')[1] + '/;'
         let audio = new Audio(stream);
         audio.play();
         this.setState({ audio })
         console.log('running playstream');
-      }).catch(err => {
-        console.log(err);
-    })
+      })
   }
 
   stopAudio = (idx) => {
@@ -41,11 +46,18 @@ class StationListItems extends Component {
     let { tune } = this.props
     let singleStation = null;
     let colorStyling = null;
+    let streamError = null;
     let style = {
       width: '12%',
       height: '12%'
     }
-    console.log(this.props.tune);
+    // console.log(this.props.tune);
+    console.log(this.state.error);
+    console.log(tune.id);
+
+    this.state.error ? 
+    streamError = <h6>ERROR: Technical Difficulties, please try again at a later time.</h6> :
+    streamError = <h6>streaming...</h6>
 
     return (
       <div className="list-item" key={tune.id}>
@@ -58,7 +70,7 @@ class StationListItems extends Component {
             this.state.streaming ?
               <div className="now-playing">
                 <img src={pauseBtn} style={style} alt="pause/stop" onClick={() => this.stopAudio(tune.id)} />
-                <h6>streaming...</h6>
+                {streamError}
               </div> :
               <img src={playBtn} style={style} alt="play" onClick={() => this.playStream(tune.id)} />
           }

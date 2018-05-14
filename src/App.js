@@ -7,7 +7,7 @@ import './App.css';
 const castKey = process.env.REACT_APP_SHOUTCAST_KEY;
 const stationUrl = process.env.REACT_APP_SHOUTCAST_STATION_URL;
 const genres = [
-  'classical', 'jazz', 'blues', 'rap', 
+  'classical', 'jazz', 'blues', 'hip hop', 
   'country', 'alternative', 'pop', 'talk', 
   'latin', 'reggae', 'r%26b', 'decades', 
   'new age', 'international', 'electronic', 'metal',
