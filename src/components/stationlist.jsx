@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import playBtn from '../images/play-button.png';
-import pauseBtn from '../images/two-lines.png';
-const streamBase = {
-  base: "/sbin/tunein-station.pls",
-  m3uBase: "/sbin/tunein-station.m3u",
-  xspfBase: "/sbin/tunein-station.xspf"
-}
+import playBtn from '../images/play-button.svg';
+import pauseBtn from '../images/pause.svg';
+import antennae from '../images/antenna.svg';
 
 class StationList extends Component {
   constructor(props) {
@@ -14,7 +10,7 @@ class StationList extends Component {
     this.state = {
       streaming: false,
       active: false,
-      audio: ''
+      audio: '',
     }
   }
 
@@ -39,7 +35,8 @@ class StationList extends Component {
       let audio = new Audio(stream);
       audio.play();
       this.setState({ audio })
-
+    }).catch(err => {
+      console.log(err);
     })
   }
 
@@ -47,8 +44,13 @@ class StationList extends Component {
     let { stations } = this.props
     let listOfStations = null;
     let { active, streaming, audio } = this.state;
+    let colorStyling = null;
+    let style = {
+      width: '12%',
+      height: '12%'
+    }
 
-    if (this.props && active) {
+    if (active) {
 
       listOfStations = stations.station.map((station, idx) => {
         return (
@@ -59,8 +61,12 @@ class StationList extends Component {
             </div>
             <div className="playbtn" onClick={() => this.handleStreamClick(idx)} key={idx}>
               { 
-                station['$'].streaming ? <img src={pauseBtn} alt="pause/stop" onClick={() => audio.pause()}/> : 
-                  <img src={playBtn} alt="play" onClick={() => this.playStream(station['$'].id)} /> 
+                station['$'].streaming ? 
+                  <div className="now-playing"> 
+                    <img src={pauseBtn} style={style} alt="pause/stop" onClick={() => audio.pause()}/> 
+                    <h6>streaming...</h6>
+                  </div> : 
+                  <img src={playBtn} style={style} alt="play" onClick={() => this.playStream(station['$'].id)} /> 
               }
             </div>
           </div>
@@ -70,11 +76,16 @@ class StationList extends Component {
       listOfStations = null;
     }
 
+    colorStyling = active ? { color: '#00d8ff' } : { color: '#fff' };
+
     return (
       <div className="list">
-        <h1 onClick={this.handleDropDownClick}> 
-          {this.props.title}
-        </h1>
+        <div className="title">
+          <h1 onClick={this.handleDropDownClick} style={colorStyling}> 
+            {this.props.title}
+          </h1>
+          <img src={antennae} alt=""/>
+        </div>
         {listOfStations}
       </div>
     )

@@ -31,10 +31,12 @@ class App extends Component {
 
         // convert xml response to json
         xml.parseString(data, (err, result) => {
-          console.log(result);
 
           // add a boolean to response object
-          result.stationlist.station.map(radio => radio['$'].streaming = false);
+          result.stationlist.station.map(radio => {
+            radio['$'].streaming = false;
+            radio['$'].error = false;
+          });
 
           // dynamically create different setState key for each array item/genre
           this.setState({
@@ -53,7 +55,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state);
     return (
       <div className="App">
         <header className="App-header">
@@ -61,11 +62,11 @@ class App extends Component {
           <h1 className="App-title">React Radio</h1>
         </header>
         <div className="App-intro">
-          {genres.map(genre => {
+          {genres.map((genre, idx) => {
             let title = genre.charAt(0).toUpperCase() + genre.substr(1);
-            return <StationList title={title} stations={this.state[genre]} />
+            title === 'R%26b' ? title = 'R&B' : title;
+            return <StationList title={title} stations={this.state[genre]} key={idx}/>
           })}
-          {/* <StationList title="Classical" stations={this.state.data} /> */}
         </div>
       </div>
     );
