@@ -4,6 +4,8 @@ import axios from 'axios';
 import StationList from './components/stationlist';
 import xml from 'xml2js';
 import './App.css';
+const castKey = process.env.REACT_APP_SHOUTCAST_KEY;
+const stationUrl = process.env.REACT_APP_SHOUTCAST_STATION_URL;
 
 class App extends Component {
   constructor() {
@@ -13,18 +15,16 @@ class App extends Component {
     }
   }
 
-  getCast = () => {
-    let key = '9u4OLchloDTnZgPo';
-    axios({
-      method: 'get',
-      url: 'http://api.shoutcast.com/legacy/genresearch?k=9u4OLchloDTnZgPo&genre=classic&limit=10',
-      // responseType: 'document'
-    })
+  getBroadcast = () => {
+    let points = [];
+    axios.get(`${stationUrl}classical${castKey}`)
     .then(res => {
       let data = res.data;
       xml.parseString(data, (err, result) => {
+        console.log(result);
+        result.stationlist.station.map(radio => radio['$'].streaming = false);
         this.setState({
-          data: result.stationlist.station
+          data: result.stationlist
         })
       })
     }).catch(err => {
@@ -33,7 +33,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.getCast();
+    this.getBroadcast();
   }
 
   render() {
